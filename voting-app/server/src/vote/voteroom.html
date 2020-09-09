@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by TEMPLATED
+http://templated.co
+Released for free under the Creative Commons Attribution License
+
+Name       : CrossWalk 
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20140216
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Safety Vote</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
+    <link href="vote/css/default.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="vote/css/fonts.css" rel="stylesheet" type="text/css" media="all" />
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<!--[if IE 6]><link href="default_ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
+<script>
+    var socket = io('165.229.185.73:10023');
+
+	function vote() {
+		//voteSSN, voteName, Symbol, Name, Belong, code, title
+		let id = localStorage.getItem('id');
+		console.log(id);
+		let symbol=$('input[name=candidate]:checked').attr('value2')
+		let name=$('input[name=candidate]:checked').attr('value1')
+		let belong=$('input[name=candidate]:checked').attr('value3')
+		let code=$('#pwd').val();
+		let title=$('#vote-title').text();
+		// let candidate_name=$('input[name=candidate]:checked').val();
+		socket.emit('vote', id, symbol, name, belong, code, title);
+		$('#extra').css("display","none");
+	}
+	
+    socket.on('connect', function(){
+        console.log('Sever connect');
+        var temp = location.href.split("?");
+        var temp1 = temp[1].split(":");
+        var data = temp1[0].split("%"); 
+        
+        socket.emit('voteroom', data[0]);
+		console.log(data[0]);
+		let reply = data[0]+'reply';
+
+		socket.on(reply, function(msg){
+			// console.log(msg);
+			// let situation = '';
+			// for(i in msg) {
+			// 	situation = situation + `<li>후보 ${msg[i].symbol}. 소속 : ${msg[i].belong} 이름 : ${msg[i].name} 투표수 : ${msg[i].count}.</li>`;
+			// }
+			// $('#situation').html(situation);
+			// 우선 컨텍스트를 가져옵니다. 
+			var ctx = document.getElementById("myChart").getContext('2d');
+			/*
+			- Chart를 생성하면서, 
+			- ctx를 첫번째 argument로 넘겨주고, 
+			- 두번째 argument로 그림을 그릴때 필요한 요소들을 모두 넘겨줍니다. 
+			*/
+			var candidates = [];
+			var counts = [];
+			
+			for(i in msg) {
+				candidates.push(msg[i].belong+'_'+msg[i].name);
+				counts.push(msg[i].count);
+			}
+
+			var myChart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					labels: candidates,
+					datasets: [{
+						label: 'Result of Votes',
+						data: counts,
+						backgroundColor: [
+							'rgba(255, 99, 132, 0.2)',
+							'rgba(54, 162, 235, 0.2)',
+							'rgba(255, 206, 86, 0.2)',
+							'rgba(75, 192, 192, 0.2)',
+							'rgba(153, 102, 255, 0.2)',
+							'rgba(255, 159, 64, 0.2)',
+							'rgba(255, 100, 64, 0.2)',
+							'rgba(255, 159, 5, 0.2)',
+							'rgba(30, 159, 64, 0.2)',
+							'rgba(75, 159, 64, 0.2)',
+							'rgba(255, 155, 64, 0.2)',
+							'rgba(255, 159, 200, 0.2)',
+							'rgba(255, 159, 0, 0.2)',
+							'rgba(255, 0, 64, 0.2)',
+							'rgba(0, 159, 64, 0.2)'
+						],
+						borderColor: [
+							'rgba(255,99,132,1)',
+							'rgba(54, 162, 235, 1)',
+							'rgba(255, 206, 86, 1)',
+							'rgba(75, 192, 192, 1)',
+							'rgba(153, 102, 255, 1)',
+							'rgba(255, 159, 64, 1)',
+							'rgba(255, 100, 64, 1)',
+							'rgba(255, 159, 5, 1)',
+							'rgba(30, 159, 64, 1)',
+							'rgba(75, 159, 64, 1)',
+							'rgba(255, 155, 64, 1)',
+							'rgba(255, 159, 200, 1)',
+							'rgba(255, 159, 0, 1)',
+							'rgba(255, 0, 64, 1)',
+							'rgba(0, 159, 64, 1)'
+						],
+						borderWidth: 1
+					}]
+				},
+				options: {
+					maintainAspectRatio: true, // default value. false일 경우 포함된 div의 크기에 맞춰서 그려짐.
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero:true
+							}
+						}]
+					}
+				}
+			});
+
+		})
+
+
+		socket.on(data[0],function(msg) {
+			console.log(msg[0].Symbol)
+			let candidatelist = ''
+			for(i in msg) {
+				console.log(msg[i])
+				candidatelist = candidatelist + `<li>후보 ${msg[i].Symbol}. 소속 : ${msg[i].Belong} ${msg[i].Name}<input type='radio' name='candidate' value1='${msg[i].Name}' value2='${msg[i].Symbol}' value3='${msg[i].Belong}'></li>`;
+			}
+			// <!-- <li>후보 1.장동건<input type='radio' name='candidate'/></li>
+			// 		<li>후보 2.서민우<input type='radio' name='candidate'/></li>
+			// 		<li>후보 3.아이린<input type='radio' name='candidate'/></li>
+			// 		<li>후보 4.아이유<input type='radio' name='candidate'/></li>
+			// 		<li>후보 5.비깡<input type='radio' name='candidate'/></li> -->
+			$('#vote-title').html(data[0])
+			$('#candidate').html(candidatelist);
+
+		})
+
+		// socket.on('vote_reply', function(msg)  {
+		// 	$('#extra').css("display","none");
+		// 	let situation = '';
+		// 	for(i in msg) {
+		// 		situation = situation + `<li>후보 </li>`;
+		// 	}
+		// 	$('#situation')
+		// 	console.log(msg)
+		// })
+    });    
+
+    
+</script>
+</head>
+<body>
+	<div id="wrapper">
+		<div id="header" class="container">
+			<div id="logo">
+				<h1><a href="#">Voting app</a></h1>
+			</div>
+			<div id="menu">
+				<ul>
+					<li><a href="../index.html" accesskey="1" title="">Home</a></li>
+					<li class="current_page_item"><a href="#" accesskey="2" title="">Progress vote</a></li>
+				</ul>
+			</div>
+		</div>
+		<div id="banner">&nbsp;</div>
+		<div id="featured">
+			<div class="container">
+				<div class="title">
+					<h2>투표 현황</h2>
+					<div style="width:100%; background-color: white;">
+						<canvas id="myChart"></canvas>
+					</div>
+					<!-- <ul id=situation>
+
+					</ul>	 -->
+				</div>		
+			</div>
+		</div>
+		<div id="extra" class="container">
+			<div class="title">
+				<h2 id= 'vote-title'></h2>
+				<span class="byline">여러분이 원하는 후보를 선택하세요.</span> </div>
+				<div id='vote-menu'>
+					<ul id='candidate'style = "font-size: large;">						
+					</ul>
+				</div>
+				<div id='vote-menu'>
+					<label>&nbsp;&nbsp;&nbsp;&nbsp;PIN&nbsp;:&nbsp;</label><input id='pwd'  type="password" maxlength="6"/>
+				</div>
+				<ul class="actions">
+					<button onclick='vote()' class='button'>투표하기</button>
+				</ul>
+		</div>
+	</div>
+	<div id="copyright" class="container">
+		<p>&copy; Saftey Vote. | Photos by <a href="http://fotogrph.com/">Fotogrph</a> | Design by <a href="http://templated.co" rel="nofollow">TEMPLATED</a>.</p>
+	</div>
+	</body>
+</html>

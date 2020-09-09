@@ -1,0 +1,142 @@
+---
+name: mychannel.firstnetwork.connectionprofile
+x-type: "hlfv1"
+description: "BankPeerContract methods will be used through this profile"
+version: "1.0"
+
+channels:
+  mychannel:
+    orderers:
+      - orderer1-org0
+    peers:
+      peer1-org1:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1-org2:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer2-org1:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer2-org2:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+organizations:
+  Org1:
+    mspid: org1MSP
+    peers:
+      - peer1-org1
+      - peer2-org1
+    certificateAuthorities:
+      - rca-org1
+    adminPrivateKey:
+      path: /tmp/hyperledger/org1/admin/msp/keystore/db9a929a7bf62e94179c6b78ba5d9071e9f378336a52f0ad3cc60a3981b4ef45_sk
+    signedCert:
+      path: /tmp/hyperledger/org1/admin/msp/signcerts/cert.pem
+  
+  Org2:
+    mspid: org2MSP
+    peers:
+      - peer1-org2
+      - peer2-org2
+    certificateAuthorities:
+      - rca-org2
+    adminPrivateKey:
+      path: /tmp/hyperledger/org2/admin/msp/keystore/32a0ca6f2c116a85f390f82fd897ca04a591093b4847711b19e1afce1c842cb0_sk
+    signedCert:
+      path: /tmp/hyperledger/org2/admin/msp/signcerts/cert.pem
+orderers:
+  orderer1-org0:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer1-org0
+    tlsCACerts:
+      path: /tmp/hyperledger/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+  orderer2-org0:
+    url: grpcs://localhost:8050
+    grpcOptions:
+      ssl-target-name-override: orderer2-org0
+    tlsCACerts:
+      path: /tmp/hyperledger/org0/orderer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem 
+  orderer3-org0:
+    url: grpcs://localhost:9050
+    grpcOptions:
+      ssl-target-name-override: orderer3-org0
+    tlsCACerts:
+      path: /tmp/hyperledger/org0/orderer3/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+  orderer4-org0:
+    url: grpcs://localhost:10050
+    grpcOptions:
+      ssl-target-name-override: orderer1-org0
+    tlsCACerts:
+      path: /tmp/hyperledger/org0/orderer4/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+  orderer5-org0:
+    url: grpcs://localhost:11050
+    grpcOptions:
+      ssl-target-name-override: orderer5-org0
+    tlsCACerts:
+      path: /tmp/hyperledger/org0/orderer5/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+peers:
+  peer1-org1:
+    url: grpcs://localhost:7051
+    grpcOptions:
+      ssl-target-name-override: peer1-org1
+      request-timeout: 120001
+    tlsCACerts:
+      path: /tmp/hyperledger/org1/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+  peer2-org1:
+    url: grpcs://localhost:8051
+    grpcOptions:
+      ssl-target-name-override: peer1-org1
+      request-timeout: 120001
+    tlsCACerts:
+      path: /tmp/hyperledger/org1/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+  
+  peer1-org2:
+    url: grpcs://localhost:9051
+    grpcOptions:
+      ssl-target-name-override: peer1-org2
+      request-timeout: 120001
+    tlsCACerts:
+      path: /tmp/hyperledger/org2/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+  peer2-org2:
+    url: grpcs://localhost:10051
+    grpcOptions:
+      ssl-target-name-override: peer2-org2
+      request-timeout: 120001
+    tlsCACerts:
+      path: /tmp/hyperledger/org2/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+certificateAuthorities:
+  rca-org1:
+    url: https://localhost:7054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/org1/ca/crypto/ca-cert.pem
+    registrar:
+      - enrollId: rca-org1-admin
+        enrollSecret: rca-org1-adminpw
+    caName: rca-org1
+  rca-org2:
+    url: https://localhost:7055
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/org2/ca/crypto/ca-cert.pem
+    registrar:
+      - enrollId: rca-org2-admin
+        enrollSecret: rca-org2-adminpw
+    caName: rca-org2

@@ -1,0 +1,92 @@
+<!--
+Author: Colorlib
+Author URL: https://colorlib.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<title>Creative Colorlib SignUp Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- Custom Theme files -->
+<link href="/register/style.css" rel="stylesheet" type="text/css" media="all" />
+<!-- //Custom Theme files -->
+<!-- web font -->
+<link href="//fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+<!-- //web font -->
+<script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	// $(document).on("keyup","input:password[numberOnly]",function() {
+    // 		$(this).val($(this).val().replace(/[^0-9]/g,""));
+	// });
+	var socket = io('165.229.185.73:10023');
+	function check(){
+		let wait = true;
+		let name = $('input[name=name]').val();
+		let ssn = $('input[name=ssn]').val();
+		let Username = $('input[name=Username]').val();
+		let password = $('input[name=password]').val();
+		socket.emit('register', name, ssn, Username, password);
+		socket.on(name, function(msg){
+			alert(msg);
+			if(msg == 'success') {
+				alert("인증이 완료되었습니다.")
+				location.href="http://165.229.185.73:10023/";
+			}
+			else {
+				alert("인증을 실패했습니다.");
+				$('#result').html('');
+				location.href="http://165.229.185.73:10023/register";
+			}
+		})
+	
+		$('#result').html('잠시만 기다려주세요');
+		return false;
+	}
+</script>
+</head>
+<body>
+	<!-- main -->
+	<div class="main-w3layouts wrapper">
+		<h1>Creative SignUp Form</h1>
+		<div class="main-agileinfo">
+			<div class="agileits-top">
+				<form action='#' onsubmit='return check();' method=POST>
+					<input class="text" id='name' type="text" name="name" placeholder="Name" required="">
+					<input class="text ssn" id='ssn' type="password" name="ssn" placeholder="SSN" maxlength="13" required=""  numberOnly>
+					<input class="text ssn" id='Username' type="text" name="Username" placeholder="Username" required="">
+					<input class="text" id='password' type="password" name="password" placeholder="Password" required="">
+					<div class="wthree-text">
+						<div class="clear"> </div>
+					</div>
+					<input type="submit" value="SIGNUP">
+					<span id='result'></span>
+				</form>
+				<p>Don't have an Account? <a href="/"> Login Now!</a></p>
+			</div>
+		</div>
+		<!-- copyright -->
+		<div class="colorlibcopy-agile">
+			<p>© 2018 Colorlib Signup Form. All rights reserved | Design by <a href="https://colorlib.com/" target="_blank">Colorlib</a></p>
+		</div>
+		<!-- //copyright -->
+		<ul class="colorlib-bubbles">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</div>
+	<!-- //main -->
+</body>
+</html>

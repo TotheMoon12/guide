@@ -1,0 +1,9 @@
+{
+    "connection_file": "connection.yaml",
+    "appAdmin": "rca-org1-admin",
+    "appAdminSecret": "rca-org1-adminpw",
+    "orgMSPID": "org1MSP",
+    "caName": "rca-org1",
+    "userName": "admin",
+    "gatewayDiscovery": { "enabled": false, "asLocalhost": true }
+}
